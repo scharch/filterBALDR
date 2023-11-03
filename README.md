@@ -11,13 +11,13 @@ Installation:
 < none >
 
 Instructions for use:
-* Generate CSV sample sheet with one line perl cell:
+* Generate CSV sample sheet with one line per cell:
 	- column 3 is the flow cell ID
 	- column 4 is the lane
 	- column 5 is the index/sequenceing barcode
-	- column 7 is the human readable cell ID
+	- column 8 is the human readable cell ID (formatted as plate-well eg 1-A02 or 3-G8)
 * Run BALDR, with output saved to a path that includes
-   <flowcell>/<lane>
+   `<flowcell>/<lane>`
 * Run BALDR summary scripts
 * `perl filterBALDR.pl samplesheet.csv`
 
