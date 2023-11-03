@@ -26,8 +26,9 @@
  Changed how <sample_sheet> is processed to allow handling of multiple
      flowcells/lanes at once from the top-level directory by CA Schramm 2021-08-11.
  Changed threshold to 1% of median (instead of 10%) by CA Schramm 2021-08-11.
+ Fixed plate identification by CA Schramm 2023-11-02.
 
- Copyright (c) 2019-2021 Vaccine Research Center, NIAID, National Institutes of Health, USA.
+ Copyright (c) 2019-2023 Vaccine Research Center, NIAID, National Institutes of Health, USA.
  All rights reserved.
 =cut
 
@@ -77,14 +78,19 @@ for my $file ("Results_IGH_rank_all.txt", "Results_IGKL_rank_all.txt") {
 
 		my ($flowcell, $lane, $index) = $row[0] =~ /(\d{6}_(?:M|A|VH)\d+_\d+_(?:000000000-)?[^\/]+)\/(\d)\/.+($cellPattern)/;
 		my $cellID = "$flowcell-$lane-$index";
+  		my $plate  = "overflow"; #will threshold all data with no plate identification together
 
 		if (exists $lookUp{$flowcell}{$lane}{$index}) {
 			$cellID = $lookUp{$flowcell}{$lane}{ $index };
+   			($plate) = $cellID =~ /^(\d+)\-?[A-Pa-p]\d+$/;
+      			if($plate eq "") {
+	 			warn("Can't identify plate for cell $cellID, will threshold separately...");
+     				$plate = "overflow";
+	 		}
 		} else {
 			warn("Couldn't find $flowcell-$lane-$index in $sampleSheet, using as is...");
 		}
 
-		my $plate = split("-", $cellID); #assumption
 		$row[0] = $cellID; #to avoid recalculating
 
 		push @{$wells{$plate}}, \@row;
